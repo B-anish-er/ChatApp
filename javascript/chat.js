@@ -25,11 +25,9 @@ inputField.onkeyup = () => {
 };
 
 sendBtn.onclick = () => {
-  inputField.value = twF.byteArrayToString(
-    twF.encryptCBC(
-      twF.stringToByteArray(key),
-      twF.stringToByteArray(inputField.value)
-    )
+  inputField.value = twF.encryptCBC(
+    twF.stringToByteArray(key),
+    twF.stringToByteArray(inputField.value)
   );
   let xhr = new XMLHttpRequest();
   xhr.open("POST", "php/insert-chat.php", true);
@@ -70,6 +68,7 @@ setInterval(() => {
         }
         chatBox.innerHTML = "";
         data.map((value) => {
+          //   console.log(value["msg"].split(","));
           if (value["msg"])
             if (value["outgoing"]) {
               chatBox.innerHTML +=
@@ -79,7 +78,7 @@ setInterval(() => {
                 twF.byteArrayToString(
                   twF.decryptCBC(
                     twF.stringToByteArray(key),
-                    twF.stringToByteArray(value["msg"])
+                    value["msg"].split(",")
                   )
                 ) +
                 "</p> \
@@ -93,7 +92,12 @@ setInterval(() => {
                 '" alt=""> \
                                 <div class="details"> \
                                     <p>' +
-                value["msg"] +
+                twF.byteArrayToString(
+                  twF.decryptCBC(
+                    twF.stringToByteArray(key),
+                    value["msg"].split(",")
+                  )
+                ) +
                 "</p> \
                                 </div> \
                                 </div>";
@@ -108,7 +112,7 @@ setInterval(() => {
   };
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xhr.send("incoming_id=" + incoming_id);
-}, 5000);
+}, 500);
 
 function scrollToBottom() {
   chatBox.scrollTop = chatBox.scrollHeight;
